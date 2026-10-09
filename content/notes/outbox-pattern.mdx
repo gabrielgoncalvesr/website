@@ -1,0 +1,35 @@
+---
+title: Transactional outbox
+summary: Publishing events without two-phase commit by writing them next to the data they describe.
+date: 2026-08-02
+updated: 2026-09-28
+lang: en
+stage: budding
+tags: [distributed-systems, messaging, patterns]
+---
+
+You change a row and want to publish an event about it. Doing both is a dual write: if the publish fails after the commit (or the other way around) the world disagrees with your database.
+
+The outbox removes the second write from the request path:
+
+1. In the **same transaction** as the business change, insert the event into an `outbox` table.
+2. A relay reads unpublished rows and publishes them, marking each as sent.
+
+```sql
+BEGIN;
+UPDATE card SET status = 'blocked' WHERE id = $1;
+INSERT INTO outbox (aggregate_id, type, payload)
+VALUES ($1, 'card.blocked', $2);
+COMMIT;
+```
+
+## Things I keep forgetting
+
+- Delivery becomes **at-least-once**. Consumers must be idempotent — see the idempotency piece.
+- Ordering only holds per aggregate if the relay preserves it. Partition by `aggregate_id`.
+- The relay is now a critical component. It needs alerting on lag, not just on errors.
+- CDC (Debezium-style) is a relay you don't write, at the cost of infrastructure you do run.
+
+## Open questions
+
+- Cleanup policy: delete after publish, or keep as an audit trail and partition by month?

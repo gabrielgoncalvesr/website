@@ -1,0 +1,44 @@
+---
+title: The pool is not the bottleneck (until it is)
+summary: Notes from a load test where every graph pointed at the connection pool — and the pool was innocent.
+date: 2026-09-10
+lang: en
+tags: [performance, postgres, observability]
+---
+
+When latency climbs under load, the connection pool is the first suspect. It is visible, it has a number you can turn up, and "we ran out of connections" is a satisfying story. It is also wrong more often than it is right.
+
+## Symptoms that lie
+
+During a load test, p99 on one service went from 80ms to several seconds. The traces showed long gaps *before* each query. Classic pool starvation, right?
+
+<Sidenote>The gap was real. What it meant was not.</Sidenote>
+
+Three things were true at once:
+
+- Wait time for a connection was high.
+- Database CPU was flat.
+- One pod was doing most of the work.
+
+A starved pool with an idle database is not a pool problem. It is a **queueing problem upstream of the pool** — something holds connections longer than it should, or traffic is not where you think it is.
+
+## Questions worth asking first
+
+1. **Is the work evenly distributed?** One hot pod with a full pool and five cold ones means the balancer, not the pool size.
+2. **What holds a connection while not talking to the database?** Network calls inside a transaction are the usual culprit.
+3. **Is telemetry actually on?** I once spent a morning reading pool metrics that were a constant zero because instrumentation was disabled in that service.
+
+```csharp
+// The shape that quietly eats a pool:
+await using var tx = await conn.BeginTransactionAsync();
+var row = await repo.LockAsync(id, tx);
+var auth = await http.PostAsync(acquirerUrl, payload); // 800ms holding a connection
+await repo.SaveAsync(row with { Status = auth.Status }, tx);
+await tx.CommitAsync();
+```
+
+## When it *is* the pool
+
+Sometimes it is. The tell is that database-side active sessions are pinned at your pool size, CPU has headroom, and requests are evenly spread. Then raising the pool helps — briefly — and the next ceiling is the database itself.
+
+The lesson I keep relearning: **measure where the time goes before you change a number.** A bigger pool is a great way to move a queue somewhere harder to see.

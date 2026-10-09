@@ -1,0 +1,44 @@
+---
+title: Ports and adapters in Go
+summary: How I structure services so the domain doesn't know there is a database, a queue or an HTTP server.
+date: 2026-05-14
+updated: 2026-08-20
+lang: en
+stage: evergreen
+tags: [architecture, go, patterns]
+---
+
+The idea is old and simple: the domain defines **ports** (interfaces it needs), and the edges provide **adapters** (Postgres, HTTP, Kafka). Dependencies point inward.
+
+In Go this falls out naturally because interfaces are satisfied implicitly and are best declared by the consumer:
+
+```go
+// internal/card/service.go — the domain owns the port
+type Repository interface {
+	Get(ctx context.Context, id ID) (Card, error)
+	Save(ctx context.Context, c Card) error
+}
+
+type Service struct{ repo Repository }
+
+func (s *Service) Block(ctx context.Context, id ID, reason Reason) error {
+	c, err := s.repo.Get(ctx, id)
+	if err != nil {
+		return err
+	}
+	if err := c.Block(reason); err != nil { // rule lives on the entity
+		return err
+	}
+	return s.repo.Save(ctx, c)
+}
+```
+
+## What has held up
+
+- **Keep ports small.** One interface per use, not one `Repository` with thirty methods.
+- **Transactions are an adapter concern** — but the domain decides the *unit of work*. A `WithinTx(func(ctx) error)` port expresses that without leaking `*sql.Tx`.
+- **Don't map for the sake of it.** If the HTTP DTO and the domain type are identical today, share it; split when they diverge.
+
+## What hasn't
+
+Folder-per-layer (`controllers/`, `services/`, `repositories/`) across the whole app. Package by feature instead; layers live *inside* each feature.

@@ -1,0 +1,26 @@
+---
+title: Sagas vs. two-phase commit
+summary: Rough notes on when to give up atomicity and design compensation instead.
+date: 2026-09-30
+lang: en
+stage: seedling
+tags: [distributed-systems, patterns]
+---
+
+Seedling — mostly questions so far.
+
+**2PC** gives atomicity across resources at the cost of a coordinator that can block everyone when it disappears. Fine inside one database cluster, painful across services you don't own.
+
+**Sagas** split the work into local transactions, each with a *compensating* action. You trade atomicity for availability and accept that intermediate states are visible.
+
+## Choreography or orchestration?
+
+- Choreography: services react to each other's events. Loose coupling, hard to see the whole flow.
+- Orchestration: one component drives the steps. Easy to reason about, one more thing to keep alive.
+
+My bias for payment flows is orchestration, because "where is this transaction right now?" is a question support asks every day.
+
+## To explore
+
+- Compensations that can themselves fail. Retry forever? Park for manual review?
+- Semantic locks — marking a resource "pending" so other sagas don't step on it.

@@ -1,0 +1,66 @@
+---
+title: Idempotência é um contrato, não um header
+summary: Por que um Idempotency-Key só funciona quando os dois lados concordam sobre o que é "a mesma requisição" — e onde sistemas de pagamento costumam errar.
+date: 2026-09-21
+lang: pt-br
+key: idempotency-contract
+tags: [payments, distributed-systems, api-design]
+---
+
+Toda API de pagamento um dia ganha um header `Idempotency-Key`. A maioria erra do mesmo jeito: trata ele como chave de cache, e não como **contrato**.
+
+## O modo de falha
+
+O cliente manda uma cobrança, a rede derruba a resposta e o cliente tenta de novo. É exatamente para isso que o header existe. O trabalho do servidor é fazer a segunda chamada devolver o resultado da primeira — não executar de novo.
+
+A implementação ingênua:
+
+```go
+func (h *Handler) Charge(ctx context.Context, req ChargeRequest) (Result, error) {
+	if cached, ok := h.cache.Get(req.IdempotencyKey); ok {
+		return cached, nil
+	}
+	res, err := h.gateway.Charge(ctx, req)
+	if err == nil {
+		h.cache.Set(req.IdempotencyKey, res, 24*time.Hour)
+	}
+	return res, err
+}
+```
+
+Tem três bugs escondidos à vista.
+
+<Sidenote>Todos já apareceram em produção em algum lugar onde trabalhei. A corrida é a que custa dinheiro de verdade.</Sidenote>
+
+1. **A corrida.** Dois retries chegando juntos erram o cache e os dois cobram.
+2. **A mentira.** Se o gateway responde ok mas o processo morre antes do `Set`, o retry cobra de novo.
+3. **O descasamento.** Mesma chave, valor diferente? O cache devolve feliz o resultado antigo para uma requisição que o cliente nunca mandou.
+
+## O que o contrato diz de verdade
+
+Uma chave de idempotência é uma promessa com três cláusulas:
+
+- **Mesma chave + mesmo payload → mesmo resultado**, sempre, dentro da janela de retenção.
+- **Mesma chave + payload diferente → rejeita.** É bug do cliente; diga isso com um `422`.
+- **Mesma chave com a primeira ainda rodando → espera ou `409`**, nunca executa duas vezes.
+
+Ou seja, a chave precisa ser gravada *antes* do efeito colateral, dentro da mesma fronteira transacional que decide se ele acontece.
+
+```sql
+INSERT INTO idempotency (key, request_hash, status)
+VALUES ($1, $2, 'in_progress')
+ON CONFLICT (key) DO NOTHING
+RETURNING key;
+```
+
+Se o insert não retorna nada, alguém já é dono dessa chave. Compare o hash e então devolva a resposta salva ou rejeite.
+
+<Callout title="Regra de bolso">
+Se dá para limpar seu store de idempotência sem ninguém perceber, ele é um cache. Trate como um livro-razão.
+</Callout>
+
+## A parte que ninguém orça
+
+O caso difícil é a chamada externa no meio. Você não coloca o adquirente dentro da sua transação. Então precisa de uma máquina de estados — `in_progress → succeeded | failed | unknown` — e um reconciliador que resolve o `unknown` perguntando ao gateway o que de fato aconteceu.
+
+Esse reconciliador é o custo real da idempotência. O header é a parte fácil.
