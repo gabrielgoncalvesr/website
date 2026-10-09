@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { NoteList } from "@/components/entry-list";
+import { ArticleRows, NoteList } from "@/components/entry-list";
 import { Band } from "@/components/v3/columns";
 import { Reveal } from "@/components/v3/reveal";
 import { allEntries, allTags } from "@/lib/content";
-import { dictionaries, formatDate, isLocale } from "@/lib/i18n";
+import { dictionaries, isLocale } from "@/lib/i18n";
 import { education, experience, profile } from "@/lib/profile";
-import { entryHref } from "@/lib/routes";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -15,7 +14,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const j = d.journal;
   const articles = allEntries("articles");
   const notes = allEntries("notes");
-  const [featured, ...rest] = articles;
   const topics = allTags([...articles, ...notes]);
 
   // Newest company first; roles oldest → newest so the path reads as a progression.
@@ -33,7 +31,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const spec = [
     [j.spec.now, j.nowValue],
     [j.spec.based, j.basedValue],
-    [j.spec.before, j.beforeValue],
     [j.spec.stack, profile.stack.slice(0, 5).join(", ")],
   ];
 
@@ -44,9 +41,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <p className="eyebrow">
             <span className="now-dot" aria-hidden /> {profile.role[locale]}
           </p>
-          <h1 className="statement">
-            {j.statement[0]} <em>{j.statement[1]}</em> {j.statement[2]}
-          </h1>
+          <h1 className="hero-name">{profile.name}</h1>
+          <p className="hero-intro">{profile.intro[locale]}</p>
         </div>
         <dl className="spec">
           {spec.map(([k, v]) => (
@@ -57,53 +53,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           ))}
         </dl>
       </section>
-
-      {featured && (
-        <Band
-          id="writing"
-          label={d.home.writing}
-          hint={d.home.writingHint}
-          aside={
-            <Link href={`/${locale}/writing`} className="band-more">
-              {j.allWriting} →
-            </Link>
-          }
-        >
-          <Reveal>
-            <Link href={entryHref(locale, featured)} className="feature">
-              <span className="feature-kicker">
-                <span>{j.latest}</span>
-                <time dateTime={featured.date}>{formatDate(featured.date, locale)}</time>
-                <span>
-                  {featured.readingMinutes} {d.post.minRead}
-                </span>
-              </span>
-              <span className="feature-title">
-                <span className="u">{featured.title}</span>
-              </span>
-              <span className="feature-summary">{featured.summary}</span>
-              <span className="feature-read">{j.read} →</span>
-            </Link>
-          </Reveal>
-          {rest.length > 0 && (
-            <ol className="feature-rest">
-              {rest.slice(0, 4).map((e, i) => (
-                <li key={e.slug}>
-                  <Reveal>
-                    <Link href={entryHref(locale, e)} className="rest-row">
-                      <span className="rest-no">No. {String(i + 2).padStart(2, "0")}</span>
-                      <span className="rest-title">
-                        <span className="u">{e.title}</span>
-                      </span>
-                      <span className="rest-summary">{e.summary}</span>
-                    </Link>
-                  </Reveal>
-                </li>
-              ))}
-            </ol>
-          )}
-        </Band>
-      )}
 
       <Band
         id="background"
@@ -155,6 +104,23 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           </div>
         </Reveal>
       </Band>
+
+      {articles.length > 0 && (
+        <Band
+          id="writing"
+          label={d.home.writing}
+          hint={d.home.writingHint}
+          aside={
+            <Link href={`/${locale}/writing`} className="band-more">
+              {j.allWriting} →
+            </Link>
+          }
+        >
+          <Reveal>
+            <ArticleRows entries={articles.slice(0, 8)} locale={locale} />
+          </Reveal>
+        </Band>
+      )}
 
       <Band
         id="garden"
