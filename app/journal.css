@@ -1,12 +1,12 @@
-/* v3 — engineer's journal. Paper and ink, a moss accent, a wide editorial grid. */
+/* v3 — engineer's journal. Paper and ink, a crimson accent, a wide editorial grid. */
 :root {
   --bg: #f7f6f1;
   --surface: #efede6;
   --fg: #1c1c19;
   --muted: #6e6d66;
   --line: #e2dfd6;
-  --accent: #3f6b4e;
-  --accent-soft: #e3eadf;
+  --accent: #b3263a;
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, var(--bg));
   --font-display: var(--font-serif);
   --measure: 70rem;
   --read: 42rem;
@@ -18,8 +18,8 @@
     --fg: #e9e8e2;
     --muted: #8d8c84;
     --line: #2a2b27;
-    --accent: #8db596;
-    --accent-soft: #1f2a22;
+    --accent: #f2808c;
+    --accent-soft: color-mix(in oklab, var(--accent) 14%, var(--bg));
   }
 }
 :root[data-theme="dark"] {
@@ -28,8 +28,8 @@
   --fg: #e9e8e2;
   --muted: #8d8c84;
   --line: #2a2b27;
-  --accent: #8db596;
-  --accent-soft: #1f2a22;
+  --accent: #f2808c;
+  --accent-soft: color-mix(in oklab, var(--accent) 14%, var(--bg));
 }
 
 body {
@@ -761,76 +761,3 @@ main {
   color: var(--accent);
 }
 
-/* ---------- accents (temporary picker) ---------- */
-:root {
-  --accent-soft: color-mix(in oklab, var(--accent) 14%, var(--bg));
-}
-:root[data-accent="cobalt"] { --accent: #2f55c9; }
-:root[data-accent="terracotta"] { --accent: #b0532c; }
-:root[data-accent="plum"] { --accent: #7b3a6b; }
-:root[data-accent="ochre"] { --accent: #9a6c0c; }
-:root[data-accent="teal"] { --accent: #1c7470; }
-:root[data-accent="crimson"] { --accent: #b3263a; }
-:root[data-accent="ink"] { --accent: #1c1c19; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --accent-soft: color-mix(in oklab, var(--accent) 16%, var(--bg)); }
-  :root:not([data-theme="light"])[data-accent="cobalt"] { --accent: #8ea8ff; }
-  :root:not([data-theme="light"])[data-accent="terracotta"] { --accent: #ec9470; }
-  :root:not([data-theme="light"])[data-accent="plum"] { --accent: #d59cc6; }
-  :root:not([data-theme="light"])[data-accent="ochre"] { --accent: #e2b450; }
-  :root:not([data-theme="light"])[data-accent="teal"] { --accent: #6fc8c2; }
-  :root:not([data-theme="light"])[data-accent="crimson"] { --accent: #f2808c; }
-  :root:not([data-theme="light"])[data-accent="ink"] { --accent: #e9e8e2; }
-}
-:root[data-theme="dark"] { --accent-soft: color-mix(in oklab, var(--accent) 16%, var(--bg)); }
-:root[data-theme="dark"][data-accent="cobalt"] { --accent: #8ea8ff; }
-:root[data-theme="dark"][data-accent="terracotta"] { --accent: #ec9470; }
-:root[data-theme="dark"][data-accent="plum"] { --accent: #d59cc6; }
-:root[data-theme="dark"][data-accent="ochre"] { --accent: #e2b450; }
-:root[data-theme="dark"][data-accent="teal"] { --accent: #6fc8c2; }
-:root[data-theme="dark"][data-accent="crimson"] { --accent: #f2808c; }
-:root[data-theme="dark"][data-accent="ink"] { --accent: #e9e8e2; }
-
-.accent-picker {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.7rem;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.08);
-}
-.accent-picker button {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  cursor: pointer;
-  outline-offset: 2px;
-}
-.accent-picker button[aria-checked="true"] {
-  outline: 2px solid var(--fg);
-}
-.accent-name {
-  margin-left: 0.25rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.6875rem;
-  color: var(--muted);
-  min-width: 5.5rem;
-}
-[data-swatch="moss"] { background: #3f6b4e; }
-[data-swatch="cobalt"] { background: #2f55c9; }
-[data-swatch="terracotta"] { background: #b0532c; }
-[data-swatch="plum"] { background: #7b3a6b; }
-[data-swatch="ochre"] { background: #9a6c0c; }
-[data-swatch="teal"] { background: #1c7470; }
-[data-swatch="crimson"] { background: #b3263a; }
-[data-swatch="ink"] { background: #1c1c19; box-shadow: inset 0 0 0 1px #888; }
-/* room for the temporary accent picker */
-.site-footer {
-  padding-bottom: 5rem;
-}

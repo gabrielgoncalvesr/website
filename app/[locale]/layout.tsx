@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { themeScript } from "@/components/theme";
-import { AccentPicker, accentScript } from "@/components/v3/accent-picker";
 import { dictionaries, isLocale, languageTags, locales, ogLocales } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import "../globals.css";
@@ -58,7 +57,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={languageTags[locale]} className={`${sans.variable} ${mono.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript + accentScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
         <a href="#main" className="skip-link">
@@ -69,7 +68,6 @@ export default async function LocaleLayout({ children, params }: Props) {
           <main id="main">{children}</main>
           <SiteFooter d={d} />
         </div>
-        <AccentPicker />
       </body>
     </html>
   );
