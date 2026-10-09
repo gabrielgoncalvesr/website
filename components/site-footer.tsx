@@ -6,7 +6,6 @@ export function socialLinks() {
     { label: "GitHub", href: site.links.github },
     { label: "LinkedIn", href: site.links.linkedin },
     { label: "Email", href: site.links.email ? `mailto:${site.links.email}` : "" },
-    { label: "RSS", href: "/feed.xml" },
   ].filter((l) => l.href);
 }
 
