@@ -605,9 +605,6 @@ main {
   background: var(--muted);
   opacity: 0.5;
 }
-.tone-c1.trace-bar:not(.depth-1 *) {
-  background: var(--fg);
-}
 .trace-bar.is-live {
   background-image: repeating-linear-gradient(-45deg, transparent 0 3px, color-mix(in oklab, var(--bg) 45%, transparent) 3px 6px);
 }
