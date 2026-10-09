@@ -37,3 +37,14 @@ Profile, experience and links live in `lib/profile.ts` and `lib/site.ts`.
 ## Hosting
 
 Vercel, Next.js preset, no env vars. Target domain `gabriel.mosaic-labs.co` (CNAME to Vercel).
+
+## Design lines
+
+Two designs on top of this base, each in its own worktree:
+
+| Branch | Worktree | Port |
+| --- | --- | --- |
+| `design/v1-sober` | `../gabriel-site-v1` | 3050 |
+| `design/v2-creative` | `../gabriel-site-v2` | 3051 |
+
+Pick one, merge it into `main`, then `git worktree remove` the other.
