@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { dictionaries, formatDate, isLocale, type Locale } from "@/lib/i18n";
+import { CareerTrace } from "@/components/v3/career-trace";
+import { Band } from "@/components/v3/columns";
+import { dictionaries, isLocale } from "@/lib/i18n";
 import { education, experience, profile } from "@/lib/profile";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -9,10 +11,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   return { title: dictionaries[locale].about.title, alternates: { canonical: `/${locale}/about` } };
-}
-
-function month(ym: string, locale: Locale) {
-  return formatDate(`${ym}-01`, locale, "short");
 }
 
 export default async function About({ params }: Props) {
@@ -28,53 +26,33 @@ export default async function About({ params }: Props) {
         ))}
       </header>
 
-      <section aria-labelledby="h-exp">
-        <h2 id="h-exp" className="section-label">
-          {d.about.experience}
-        </h2>
-        <ol className="timeline">
-          {experience.map((j) => (
-            <li key={`${j.company}-${j.start}`} className="job">
-              <p className="job-when">
-                {month(j.start, locale)} — {j.end ? month(j.end, locale) : d.about.present}
-              </p>
-              <div>
-                <h3 className="job-role">
-                  {j.role[locale]} <span className="muted">· {j.company}</span>
-                </h3>
-                <p className="job-summary">{j.summary[locale]}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <Band id="experience" label={d.about.experience} hint={d.journal.traceHint}>
+        <div className="trace-wrap">
+          <CareerTrace jobs={experience} locale={locale} labels={{ present: d.about.present, trace: d.about.experience }} />
+        </div>
+      </Band>
 
-      <section aria-labelledby="h-edu">
-        <h2 id="h-edu" className="section-label">
-          {d.about.education}
-        </h2>
+      <Band id="education" label={d.about.education}>
         <ul className="edu">
           {education.map((e) => (
             <li key={e.school}>
               <span>
-                {e.degree[locale]} <span className="muted">· {e.school}</span>
+                <span className="edu-degree">{e.degree[locale]}</span>
+                <span className="muted"> · {e.school}</span>
               </span>
               <span className="muted mono">{e.years}</span>
             </li>
           ))}
         </ul>
-      </section>
+      </Band>
 
-      <section aria-labelledby="h-stack">
-        <h2 id="h-stack" className="section-label">
-          {d.about.stack}
-        </h2>
+      <Band id="stack" label={d.about.stack}>
         <ul className="chips">
           {profile.stack.map((s) => (
             <li key={s}>{s}</li>
           ))}
         </ul>
-      </section>
+      </Band>
     </div>
   );
 }

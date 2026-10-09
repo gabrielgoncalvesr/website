@@ -13,9 +13,20 @@ export function socialLinks() {
 export function SiteFooter({ d }: { d: Dictionary }) {
   return (
     <footer className="site-footer">
-      <p>
-        © {new Date().getFullYear()} {site.name}
+      <p className="footer-name">
+        <span className="wordmark-path">~/</span>
+        {site.name} · {new Date().getFullYear()}
       </p>
+      <ul className="footer-links">
+        {socialLinks().map((l) => (
+          <li key={l.label}>
+            <a href={l.href}>{l.label}</a>
+          </li>
+        ))}
+        <li>
+          <a href="#main">{d.journal.backToTop} ↑</a>
+        </li>
+      </ul>
     </footer>
   );
 }

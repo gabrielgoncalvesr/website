@@ -8,7 +8,7 @@ export function SiteHeader({ locale, d }: { locale: Locale; d: Dictionary }) {
   return (
     <header className="site-header">
       <Link href={`/${locale}`} className="wordmark">
-        Gabriel Gonçalves
+        <span className="wordmark-path">~/</span>Gabriel Gonçalves
       </Link>
       <nav className="site-nav" aria-label="Main">
         <NavLink href={`/${locale}/writing`}>{d.nav.writing}</NavLink>

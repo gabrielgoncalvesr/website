@@ -14,12 +14,12 @@ export function ogCard({ eyebrow, title, footer }: { eyebrow: string; title: str
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 80,
-          background: "#fafaf9",
-          color: "#1a1a18",
+          background: "#f7f6f1",
+          color: "#1c1c19", borderTop: "14px solid #3f6b4e",
           fontFamily: "serif",
         }}
       >
-        <div style={{ fontSize: 26, letterSpacing: 4, textTransform: "uppercase", color: "#6b6b66" }}>{eyebrow}</div>
+        <div style={{ fontSize: 26, letterSpacing: 4, textTransform: "uppercase", color: "#3f6b4e", fontFamily: "monospace" }}>{eyebrow}</div>
         <div style={{ fontSize: title.length > 50 ? 64 : 80, lineHeight: 1.08, maxWidth: 1000 }}>{title}</div>
         <div style={{ fontSize: 28, color: "#6b6b66" }}>{footer}</div>
       </div>

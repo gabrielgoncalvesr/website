@@ -21,7 +21,7 @@ export default async function Writing({ params }: Props) {
     <section className="index-page">
       <header className="page-head">
         <h1>{d.writing.title}</h1>
-        <p className="muted">{d.writing.intro}</p>
+        <p>{d.writing.intro}</p>
       </header>
       <ArticleList entries={allEntries("articles")} locale={locale} />
     </section>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -7,9 +7,16 @@ import { themeScript } from "@/components/theme";
 import { dictionaries, isLocale, languageTags, locales, ogLocales } from "@/lib/i18n";
 import { site } from "@/lib/site";
 import "../globals.css";
+import "../journal.css";
 
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const serif = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+});
 
 type Props = { children: React.ReactNode; params: Promise<{ locale: string }> };
 
@@ -38,8 +45,8 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
-    { media: "(prefers-color-scheme: dark)", color: "#111110" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f6f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#121311" },
   ],
 };
 
@@ -48,7 +55,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!isLocale(locale)) notFound();
   const d = dictionaries[locale];
   return (
-    <html lang={languageTags[locale]} className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang={languageTags[locale]} className={`${sans.variable} ${mono.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

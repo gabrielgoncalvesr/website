@@ -1,57 +1,129 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArticleList, NoteList } from "@/components/entry-list";
-import { socialLinks } from "@/components/site-footer";
-import { allEntries } from "@/lib/content";
-import { dictionaries, isLocale } from "@/lib/i18n";
+import { NoteList } from "@/components/entry-list";
+import { Band } from "@/components/v3/columns";
+import { Reveal } from "@/components/v3/reveal";
+import { allEntries, allTags } from "@/lib/content";
+import { dictionaries, formatDate, isLocale } from "@/lib/i18n";
 import { profile } from "@/lib/profile";
+import { entryHref } from "@/lib/routes";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const d = dictionaries[locale];
+  const j = d.journal;
+  const articles = allEntries("articles");
+  const notes = allEntries("notes");
+  const [featured, ...rest] = articles;
+  const topics = allTags([...articles, ...notes]);
+
+  const spec = [
+    [j.spec.now, j.nowValue],
+    [j.spec.based, j.basedValue],
+    [j.spec.before, j.beforeValue],
+    [j.spec.stack, profile.stack.slice(0, 5).join(", ")],
+  ];
+
   return (
     <div className="home">
-      <section className="intro">
-        <h1 className="intro-name">{profile.name}</h1>
-        <p className="intro-role">
-          {profile.role[locale]} · {profile.stack.slice(0, 3).join(" · ")}
-        </p>
-        <p className="intro-body">{profile.intro[locale]}</p>
-      </section>
-
-      <section className="home-section" aria-labelledby="h-writing">
-        <div className="section-head">
-          <h2 id="h-writing">{d.home.writing}</h2>
-          <Link href={`/${locale}/writing`} className="section-more">
-            {d.home.all} →
-          </Link>
+      <section className="hero">
+        <div className="hero-main">
+          <p className="eyebrow">
+            <span className="now-dot" aria-hidden /> {profile.role[locale]}
+          </p>
+          <h1 className="statement">
+            {j.statement[0]} <em>{j.statement[1]}</em> {j.statement[2]}
+          </h1>
         </div>
-        <ArticleList entries={allEntries("articles").slice(0, 5)} locale={locale} />
-      </section>
-
-      <section className="home-section" aria-labelledby="h-notes">
-        <div className="section-head">
-          <h2 id="h-notes">{d.home.notes}</h2>
-          <Link href={`/${locale}/notes`} className="section-more">
-            {d.home.all} →
-          </Link>
-        </div>
-        <NoteList entries={allEntries("notes").slice(0, 4)} locale={locale} d={d} />
-      </section>
-
-      <section className="home-section" aria-labelledby="h-elsewhere">
-        <div className="section-head">
-          <h2 id="h-elsewhere">{d.home.elsewhere}</h2>
-        </div>
-        <ul className="link-row">
-          {socialLinks().map((l) => (
-            <li key={l.label}>
-              <a href={l.href}>{l.label} ↗</a>
-            </li>
+        <dl className="spec">
+          {spec.map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       </section>
+
+      {featured && (
+        <Band
+          id="writing"
+          label={d.home.writing}
+          hint={d.home.writingHint}
+          aside={
+            <Link href={`/${locale}/writing`} className="band-more">
+              {j.allWriting} →
+            </Link>
+          }
+        >
+          <Reveal>
+            <Link href={entryHref(locale, featured)} className="feature">
+              <span className="feature-kicker">
+                <span>{j.latest}</span>
+                <time dateTime={featured.date}>{formatDate(featured.date, locale)}</time>
+                <span>
+                  {featured.readingMinutes} {d.post.minRead}
+                </span>
+              </span>
+              <span className="feature-title">
+                <span className="u">{featured.title}</span>
+              </span>
+              <span className="feature-summary">{featured.summary}</span>
+              <span className="feature-read">{j.read} →</span>
+            </Link>
+          </Reveal>
+          {rest.length > 0 && (
+            <ol className="feature-rest">
+              {rest.slice(0, 4).map((e, i) => (
+                <li key={e.slug}>
+                  <Reveal>
+                    <Link href={entryHref(locale, e)} className="rest-row">
+                      <span className="rest-no">No. {String(i + 2).padStart(2, "0")}</span>
+                      <span className="rest-title">
+                        <span className="u">{e.title}</span>
+                      </span>
+                      <span className="rest-summary">{e.summary}</span>
+                    </Link>
+                  </Reveal>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Band>
+      )}
+
+      <Band
+        id="garden"
+        label={j.garden}
+        hint={d.home.notesHint}
+        aside={
+          <Link href={`/${locale}/notes`} className="band-more">
+            {j.more} →
+          </Link>
+        }
+      >
+        <Reveal>
+          <NoteList entries={notes.slice(0, 6)} locale={locale} d={d} />
+        </Reveal>
+      </Band>
+
+      <Band id="topics" label={j.topics}>
+        <Reveal>
+          <p className="topics">
+            {topics.map((t, i) => (
+              <span key={t}>
+                <Link href={`/${locale}/notes?tag=${encodeURIComponent(t)}`}>{t.replace(/-/g, " ")}</Link>
+                {i < topics.length - 1 && (
+                  <span className="topics-sep" aria-hidden>
+                    {" / "}
+                  </span>
+                )}
+              </span>
+            ))}
+          </p>
+        </Reveal>
+      </Band>
     </div>
   );
 }

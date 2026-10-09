@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /** Filters sibling `[data-tags]` cards inside `scopeId` without re-rendering the server list. */
 export function TagFilter({ tags, allLabel, scopeId }: { tags: string[]; allLabel: string; scopeId: string }) {
@@ -13,6 +13,13 @@ export function TagFilter({ tags, allLabel, scopeId }: { tags: string[]; allLabe
       el.closest("li")!.hidden = !show;
     });
   }
+
+  // Deep link: /notes?tag=go
+  useEffect(() => {
+    const t = new URLSearchParams(location.search).get("tag");
+    if (t && tags.includes(t)) pick(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="tag-filter" role="toolbar">
