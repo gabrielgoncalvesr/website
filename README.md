@@ -44,5 +44,6 @@ Two designs on top of this base, each in its own worktree:
 | --- | --- | --- |
 | `design/v1-sober` | `../gabriel-site-v1` | 3050 |
 | `design/v2-creative` | `../gabriel-site-v2` | 3051 |
+| `design/v3` | `../gabriel-site-v3` | 3052 |
 
 Pick one, merge it into `main`, then `git worktree remove` the other.

@@ -106,7 +106,7 @@ export const experience: Job[] = [
 export const education = [
   { school: "FIAP", degree: { en: "MBA, Software Engineering", "pt-br": "MBA, Engenharia de Software" }, years: "2024–2025" },
   { school: "Universidade de Mogi das Cruzes", degree: { en: "B.Sc. Information Systems", "pt-br": "Bacharelado em Sistemas de Informação" }, years: "2018–2021" },
-  { school: "ETEC", degree: { en: "Technical degree, IT", "pt-br": "Técnico em Informática" }, years: "2017–2018" },
+  { school: "ETEC", degree: { en: "Technical degree, Computer Networks", "pt-br": "Técnico em Redes de Computadores" }, years: "2017–2018" },
 ] satisfies { school: string; degree: L; years: string }[];
 
 export function yearsOfExperience(now = new Date()) {
