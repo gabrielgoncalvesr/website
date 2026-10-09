@@ -32,7 +32,7 @@ export function CareerTrace({ jobs, locale, now = new Date(), labels }: Props) {
     const s = m(roles[0].start);
     const e = Math.max(...roles.map((r) => (r.end ? m(r.end) : end)));
     return { company, roles, s, e };
-  }).sort((a, b) => a.s - b.s);
+  }).sort((a, b) => b.s - a.s); // most recent company first
 
   const years: number[] = [];
   for (let y = Math.ceil(start / 12); y * 12 < end; y++) years.push(y);
