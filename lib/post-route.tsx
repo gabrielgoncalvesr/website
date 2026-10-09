@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostView } from "@/components/post-view";
-import { allEntries, getEntry, loadBody, translationsOf, type Kind } from "./content";
+import { allEntries, getEntry, loadBody, type Kind } from "./content";
 import { dictionaries, isLocale, locales, ogLocales } from "./i18n";
 import { entryHref } from "./routes";
 import { site } from "./site";
@@ -18,14 +18,11 @@ export function postRoute(kind: Kind) {
     const { locale, slug } = await params;
     const entry = getEntry(kind, slug);
     if (!entry || !isLocale(locale)) return {};
-    const canonical = entryHref(entry.lang, entry);
-    const languages = Object.fromEntries(
-      [entry, ...translationsOf(entry)].map((e) => [e.lang === "pt-br" ? "pt-BR" : "en", entryHref(e.lang, e)]),
-    );
+    const canonical = entryHref("en", entry);
     return {
       title: entry.title,
       description: entry.summary,
-      alternates: { canonical, languages },
+      alternates: { canonical },
       openGraph: {
         type: "article",
         title: entry.title,
@@ -33,7 +30,7 @@ export function postRoute(kind: Kind) {
         url: `${site.url}${canonical}`,
         publishedTime: entry.date,
         modifiedTime: entry.updated,
-        locale: ogLocales[entry.lang],
+        locale: ogLocales.en,
         tags: entry.tags,
       },
     };
@@ -45,7 +42,7 @@ export function postRoute(kind: Kind) {
     if (!entry || !isLocale(locale)) notFound();
     const Body = await loadBody(kind, slug);
     return (
-      <PostView entry={entry} translations={translationsOf(entry)} locale={locale} d={dictionaries[locale]}>
+      <PostView entry={entry} locale={locale} d={dictionaries[locale]}>
         <Body />
       </PostView>
     );

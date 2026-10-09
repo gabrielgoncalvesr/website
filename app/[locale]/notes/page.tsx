@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NoteList } from "@/components/entry-list";
 import { TagFilter } from "@/components/tag-filter";
-import { allTags, entriesFor } from "@/lib/content";
+import { allTags, allEntries } from "@/lib/content";
 import { dictionaries, isLocale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -18,7 +18,7 @@ export default async function Notes({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const d = dictionaries[locale];
-  const entries = entriesFor("notes", locale);
+  const entries = allEntries("notes");
   return (
     <section className="index-page" id="garden">
       <header className="page-head">

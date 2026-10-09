@@ -4,11 +4,6 @@ import { formatDate, type Dictionary, type Locale } from "@/lib/i18n";
 import { entryHref } from "@/lib/routes";
 import { StageBadge } from "./stage";
 
-function LangBadge({ entry, locale }: { entry: Entry; locale: Locale }) {
-  if (entry.lang === locale) return null;
-  return <span className="lang-badge">{entry.lang === "en" ? "EN" : "PT"}</span>;
-}
-
 export function ArticleList({ entries, locale }: { entries: Entry[]; locale: Locale }) {
   return (
     <ol className="article-list">
@@ -20,7 +15,6 @@ export function ArticleList({ entries, locale }: { entries: Entry[]; locale: Loc
             </time>
             <span className="article-title">
               {e.title}
-              <LangBadge entry={e} locale={locale} />
             </span>
           </Link>
         </li>
@@ -38,7 +32,6 @@ export function NoteList({ entries, locale, d }: { entries: Entry[]; locale: Loc
             {e.stage && <StageBadge stage={e.stage} d={d} />}
             <span className="note-title">
               {e.title}
-              <LangBadge entry={e} locale={locale} />
             </span>
             <span className="note-summary">{e.summary}</span>
             <span className="note-meta">

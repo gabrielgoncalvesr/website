@@ -42,8 +42,6 @@ const en = {
     updated: "Updated",
     published: "Published",
     onThisPage: "On this page",
-    alsoIn: "Also available in",
-    writtenIn: "Written in",
     back: "Back",
   },
   about: {
@@ -54,7 +52,6 @@ const en = {
     present: "present",
   },
   theme: { toggle: "Toggle theme" },
-  footer: { rss: "RSS", built: "Built with Next.js, set in type, written by hand." },
   notFound: { title: "Not found", body: "This page took a wrong turn somewhere.", home: "Go home" },
 };
 
@@ -90,8 +87,6 @@ const ptbr: typeof en = {
     updated: "Atualizada",
     published: "Publicado",
     onThisPage: "Nesta página",
-    alsoIn: "Também disponível em",
-    writtenIn: "Escrito em",
     back: "Voltar",
   },
   about: {
@@ -102,7 +97,6 @@ const ptbr: typeof en = {
     present: "atual",
   },
   theme: { toggle: "Alternar tema" },
-  footer: { rss: "RSS", built: "Feito com Next.js, tipografia e escrito à mão." },
   notFound: { title: "Não encontrado", body: "Essa página se perdeu no caminho.", home: "Voltar ao início" },
 };
 

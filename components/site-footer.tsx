@@ -16,7 +16,6 @@ export function SiteFooter({ d }: { d: Dictionary }) {
       <p>
         © {new Date().getFullYear()} {site.name}
       </p>
-      <p className="muted">{d.footer.built}</p>
     </footer>
   );
 }

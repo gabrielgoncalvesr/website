@@ -1,22 +1,21 @@
 import Link from "next/link";
 import type { Entry } from "@/lib/content";
-import { formatDate, languageNames, type Dictionary, type Locale } from "@/lib/i18n";
-import { entryHref, section } from "@/lib/routes";
+import { formatDate, type Dictionary, type Locale } from "@/lib/i18n";
+import { section } from "@/lib/routes";
 import { StageBadge } from "./stage";
 import { Toc } from "./toc";
 
 type Props = {
   entry: Entry;
-  translations: Entry[];
   locale: Locale;
   d: Dictionary;
   children: React.ReactNode;
 };
 
-export function PostView({ entry, translations, locale, d, children }: Props) {
+export function PostView({ entry, locale, d, children }: Props) {
   const isNote = entry.kind === "notes";
   return (
-    <article className="post" lang={entry.lang === "pt-br" ? "pt-BR" : "en"}>
+    <article className="post" lang="en">
       <header className="post-header">
         <Link href={`/${locale}/${section[entry.kind]}`} className="back-link">
           ← {isNote ? d.nav.notes : d.nav.writing}
@@ -52,19 +51,6 @@ export function PostView({ entry, translations, locale, d, children }: Props) {
               <li key={t}>#{t}</li>
             ))}
           </ul>
-        )}
-        {translations.length > 0 && (
-          <p className="post-translations">
-            {d.post.alsoIn}{" "}
-            {translations.map((t, i) => (
-              <span key={t.slug}>
-                {i > 0 && ", "}
-                <Link href={entryHref(t.lang, t)} hrefLang={t.lang}>
-                  {languageNames[t.lang]}
-                </Link>
-              </span>
-            ))}
-          </p>
         )}
       </header>
       <div className="post-layout">

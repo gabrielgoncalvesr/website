@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleList, NoteList } from "@/components/entry-list";
 import { socialLinks } from "@/components/site-footer";
-import { entriesFor } from "@/lib/content";
+import { allEntries } from "@/lib/content";
 import { dictionaries, isLocale } from "@/lib/i18n";
 import { profile } from "@/lib/profile";
 
@@ -27,7 +27,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             {d.home.all} →
           </Link>
         </div>
-        <ArticleList entries={entriesFor("articles", locale).slice(0, 5)} locale={locale} />
+        <ArticleList entries={allEntries("articles").slice(0, 5)} locale={locale} />
       </section>
 
       <section className="home-section" aria-labelledby="h-notes">
@@ -37,7 +37,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             {d.home.all} →
           </Link>
         </div>
-        <NoteList entries={entriesFor("notes", locale).slice(0, 4)} locale={locale} d={d} />
+        <NoteList entries={allEntries("notes").slice(0, 4)} locale={locale} d={d} />
       </section>
 
       <section className="home-section" aria-labelledby="h-elsewhere">
