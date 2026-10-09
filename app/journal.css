@@ -354,6 +354,19 @@ a:focus-visible .u {
   line-height: 1.35;
   letter-spacing: -0.02em;
 }
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.5em;
+}
+.topics li {
+  white-space: nowrap;
+}
+.topics li:not(:last-child)::after {
+  content: "/";
+  margin-left: 0.5em;
+  color: var(--line);
+}
 .topics a {
   text-decoration: none;
   transition: color 200ms;
@@ -361,9 +374,6 @@ a:focus-visible .u {
 .topics a:hover {
   color: var(--accent);
   font-style: italic;
-}
-.topics-sep {
-  color: var(--line);
 }
 
 /* ---------- reveal ---------- */
@@ -662,13 +672,6 @@ a:focus-visible .u {
 .prose li::marker {
   color: var(--accent);
 }
-.prose > p:first-child::first-letter {
-  float: left;
-  font-size: 3.6em;
-  line-height: 0.82;
-  padding: 0.08em 0.1em 0 0;
-  color: var(--accent);
-}
 .sidenote {
   font-family: var(--font-sans), sans-serif;
   border-left-color: var(--accent);
@@ -697,9 +700,61 @@ a:focus-visible .u {
 .toc a[aria-current="true"] {
   color: var(--accent);
 }
-.topics > span {
-  white-space: nowrap;
-}
 .depth-1 .trace-meta {
   display: none;
+}
+
+.band-body {
+  min-width: 0;
+}
+
+/* ---------- background ---------- */
+.background {
+  display: grid;
+  gap: 2.5rem;
+}
+@media (min-width: 720px) {
+  .background {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem;
+  }
+}
+.bg-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.bg-item {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--line);
+}
+.bg-years {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-top: 0.3rem;
+}
+.bg-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.bg-title {
+  font-family: var(--font-serif);
+  font-size: 1.1875rem;
+  line-height: 1.25;
+}
+.bg-path {
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.bg-arrow {
+  color: var(--accent);
 }
