@@ -1,0 +1,608 @@
+/* 2c · Console — the site as a shell session. Phosphor amber on near-black; paper in light mode. */
+html[data-design="2c"] {
+  --bg: #f3f0e6;
+  --surface: #e9e5d8;
+  --fg: #1f1e1a;
+  --muted: #7a776c;
+  --line: #d9d4c4;
+  --accent: #b4590a;
+  --green: #2f7d3f;
+  --cyan: #1f6f8b;
+  --pink: #b3263a;
+  --accent-soft: color-mix(in oklab, var(--accent) 14%, var(--bg));
+  --font-display: var(--font-jet);
+  --font-body: var(--font-jet);
+  --measure: 104rem;
+  --read: 44rem;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-design="2c"]:not([data-theme="light"]) {
+    --bg: #0b0c0a;
+    --surface: #141612;
+    --fg: #d8d6cc;
+    --muted: #6f726a;
+    --line: #23261f;
+    --accent: #ffb224;
+    --green: #7bd88f;
+    --cyan: #78c6e6;
+    --pink: #f2808c;
+  }
+}
+html[data-design="2c"][data-theme="dark"] {
+  --bg: #0b0c0a;
+  --surface: #141612;
+  --fg: #d8d6cc;
+  --muted: #6f726a;
+  --line: #23261f;
+  --accent: #ffb224;
+  --green: #7bd88f;
+  --cyan: #78c6e6;
+  --pink: #f2808c;
+}
+[data-design="2c"] body {
+  font-family: var(--font-jet), ui-monospace, monospace;
+  font-size: 0.9375rem;
+  font-variant-ligatures: none;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 2px, color-mix(in oklab, var(--fg) 2.5%, transparent) 2px 3px);
+  background-size: auto;
+}
+[data-design="2c"] ::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+.d2c-dim {
+  color: var(--muted);
+}
+
+/* header */
+.d2c-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+  margin-bottom: 3.5rem;
+  background: var(--bg);
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.8125rem;
+}
+.d2c-host {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--green);
+  font-weight: 600;
+}
+.d2c-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--green);
+  border-radius: 999px;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--green) 25%, transparent);
+}
+.d2c-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-right: auto;
+}
+.d2c-tabs .nav-link {
+  text-decoration: none;
+  color: var(--muted);
+  padding: 0.2rem 0.5rem;
+}
+.d2c-tabs .nav-link:hover {
+  color: var(--fg);
+}
+.d2c-tabs .nav-link[aria-current="page"] {
+  background: var(--accent);
+  color: var(--bg);
+}
+.d2c-tools {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+@media (max-width: 640px) {
+  .d2c-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .d2c-tabs {
+    order: 3;
+    width: 100%;
+  }
+}
+
+/* blocks — a session that plays in order (see session.tsx) */
+.d2c-block {
+  position: relative;
+  margin-bottom: 4.5rem;
+}
+.d2c-cmd {
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+.d2c-ps1 {
+  color: var(--green);
+}
+.d2c-typed {
+  display: inline-block;
+  vertical-align: bottom;
+  white-space: nowrap;
+  overflow: hidden;
+  width: calc(var(--c, var(--n)) * 1ch);
+}
+.d2c-caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.15em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: var(--accent);
+  visibility: hidden;
+}
+.d2c-out {
+  border-left: 1px solid var(--line);
+  padding-left: 1.25rem;
+  transition: border-color 300ms;
+}
+[data-step="wait"],
+[data-step="typing"] .d2c-out {
+  visibility: hidden;
+}
+[data-step="wait"] .d2c-typed {
+  width: 0;
+}
+[data-step="typing"] .d2c-caret,
+[data-step="printing"] .d2c-caret {
+  visibility: visible;
+}
+[data-step="printing"] .d2c-caret {
+  animation: d1-blink 0.8s steps(1) infinite;
+}
+[data-step="printing"] .d2c-out {
+  border-color: var(--accent);
+}
+[data-step="wait"] [data-ln],
+[data-step="typing"] [data-ln],
+[data-step="printing"] [data-ln]:not(.is-on) {
+  visibility: hidden;
+}
+[data-step="printing"] [data-ln].is-on {
+  animation: d2c-print 160ms ease-out both;
+}
+@keyframes d2c-print {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+/* the last finished step keeps a live cursor on a fresh prompt line */
+.d2c-block[data-step="done"]:has(+ .d2c-block[data-step="wait"])::after {
+  content: "gabriel@sp:~$ ▍";
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4.5rem);
+  color: var(--green);
+  font-weight: 500;
+  animation: d2c-pulse 1.4s ease-in-out infinite;
+}
+@keyframes d2c-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* whoami */
+.d2c-name {
+  font-size: clamp(2.25rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+}
+.d2c-role {
+  line-height: 1.7;
+}
+.d2c-role + .d2c-intro {
+  margin-top: 1rem;
+}
+.d2c-key {
+  color: var(--cyan);
+}
+.d2c-intro {
+  max-width: 44rem;
+  line-height: 1.7;
+  color: color-mix(in oklab, var(--fg) 85%, var(--muted));
+}
+
+/* git graph */
+.d2c-graph {
+  list-style: none;
+  padding: 0;
+}
+.d2c-graph li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  position: relative;
+  padding-bottom: 1.1rem;
+}
+.d2c-graph li::before {
+  content: "";
+  position: absolute;
+  left: 0.3rem;
+  top: 1.3rem;
+  bottom: 0;
+  border-left: 1.5px solid var(--pink);
+}
+.d2c-graph li.is-nuvy::before {
+  border-color: var(--accent);
+}
+.d2c-graph li:last-child::before {
+  display: none;
+}
+.d2c-lane {
+  color: var(--pink);
+  font-weight: 800;
+}
+.is-nuvy .d2c-lane {
+  color: var(--accent);
+}
+.d2c-hash {
+  color: var(--accent);
+}
+.d2c-ref {
+  color: var(--green);
+  font-weight: 600;
+}
+.d2c-ref.is-tag {
+  color: var(--cyan);
+}
+.d2c-commit b {
+  font-weight: 600;
+}
+.d2c-msg {
+  display: block;
+  color: var(--muted);
+  margin-top: 0.15rem;
+}
+.d2c-graph li:hover .d2c-msg {
+  color: var(--fg);
+}
+.d2c-root .d2c-lane {
+  color: var(--muted);
+}
+
+/* ls */
+.d2c-ls {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.25rem;
+}
+.d2c-ls a {
+  display: grid;
+  grid-template-columns: auto 4rem 8rem auto 1fr;
+  gap: 1.25rem;
+  text-decoration: none;
+  padding: 0.15rem 0.35rem;
+  margin-inline: -0.35rem;
+  white-space: pre;
+}
+.d2c-ls a:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+.d2c-ls a:hover * {
+  color: var(--bg);
+}
+.d2c-size {
+  color: var(--cyan);
+  text-align: right;
+}
+.d2c-file {
+  color: var(--fg);
+  font-weight: 600;
+}
+.d2c-title {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.d2c-more {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.d2c-more:hover {
+  text-decoration: underline;
+}
+@media (max-width: 760px) {
+  .d2c-ls a {
+    grid-template-columns: auto 1fr;
+    white-space: normal;
+  }
+  .d2c-ls a > :nth-child(1),
+  .d2c-ls a > :nth-child(3),
+  .d2c-ls .d2c-title {
+    display: none;
+  }
+}
+
+/* tree */
+.d2c-tree p {
+  white-space: pre;
+  line-height: 1.7;
+}
+.d2c-tree a {
+  text-decoration: none;
+}
+.d2c-tree a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.d2c-stage {
+  font-weight: 700;
+}
+.d2c-stage.is-evergreen {
+  color: var(--green);
+}
+.d2c-stage.is-budding {
+  color: var(--cyan);
+}
+.d2c-stage.is-seedling {
+  color: var(--accent);
+}
+
+/* json */
+.d2c-json {
+  font: inherit;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.d2c-k {
+  color: var(--cyan);
+}
+.d2c-s {
+  color: var(--green);
+}
+
+/* interactive shell */
+.d2c-hint {
+  margin-bottom: 0.75rem;
+}
+.d2c-shell {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 1rem 1.25rem;
+  cursor: text;
+}
+.d2c-shell-lines {
+  max-height: 18rem;
+  overflow-y: auto;
+}
+.d2c-line {
+  white-space: pre-wrap;
+  line-height: 1.65;
+}
+.d2c-line.is-out {
+  color: var(--muted);
+}
+.d2c-line.is-err {
+  color: var(--pink);
+}
+.d2c-shell-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.d2c-shell-form input {
+  flex: 1;
+  background: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  color: var(--fg);
+  caret-color: var(--accent);
+  caret-shape: block;
+  padding: 0.25rem 0;
+}
+
+/* footer — tmux status line */
+.d2c-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 4rem 0 5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  font-size: 0.8125rem;
+}
+.d2c-ok {
+  color: var(--green);
+  animation: d1-blink 2s ease-in-out infinite;
+}
+.d2c-footer-links {
+  display: flex;
+  gap: 1rem;
+}
+.d2c-footer-links a {
+  text-decoration: none;
+  color: var(--accent);
+}
+.d2c-footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* inner pages */
+[data-design="2c"] .page-head h1,
+[data-design="2c"] .post-title {
+  font-family: var(--font-jet);
+  letter-spacing: -0.04em;
+  font-weight: 700;
+}
+[data-design="2c"] .page-head h1,
+[data-design="2c"] .post-title {
+  color: var(--accent);
+}
+[data-design="2c"] .prose {
+  font-family: var(--font-jet);
+  font-size: 0.9375rem;
+}
+[data-design="2c"] .prose h2,
+[data-design="2c"] .prose h3 {
+  font-family: var(--font-jet);
+}
+.d2c-tree,
+.d2c-json {
+  overflow-x: auto;
+}
+@media (max-width: 640px) {
+  .d2c-tree,
+  .d2c-json,
+  .d2c-graph {
+    font-size: 0.8125rem;
+  }
+}
+
+/* ── v2: wide session — sticky side panes + main shell ── */
+.d2c {
+  display: grid;
+  grid-template-columns: 20rem minmax(0, 1fr);
+  gap: 3.5rem;
+  align-items: start;
+}
+.d2c-side {
+  position: sticky;
+  top: 4.5rem;
+  display: grid;
+  gap: 1.25rem;
+  font-size: 0.8125rem;
+}
+.d2c-pane {
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  padding: 0.9rem 1rem 1rem;
+}
+.d2c-pane-title {
+  margin: -1.45rem 0 0.6rem -0.35rem;
+  width: max-content;
+  padding: 0 0.35rem;
+  background: var(--bg);
+  color: var(--muted);
+}
+.d2c-fetch {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+.d2c-logo {
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--accent);
+}
+.d2c-fetch dl div {
+  display: flex;
+  gap: 0.5rem;
+  line-height: 1.6;
+}
+.d2c-fetch dt {
+  color: var(--cyan);
+  min-width: 3.5rem;
+}
+.d2c-fetch dd {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.d2c-swatch {
+  display: flex;
+  gap: 0;
+  margin-top: 0.85rem;
+}
+.d2c-swatch i {
+  width: 1.4rem;
+  height: 0.8rem;
+}
+.d2c-toc {
+  list-style: none;
+  padding: 0;
+  line-height: 1.85;
+}
+.d2c-toc li {
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 200ms;
+}
+.d2c-toc-n {
+  white-space: pre;
+}
+.d2c-toc li::before {
+  content: "· ";
+}
+.d2c-toc li[data-state="typing"],
+.d2c-toc li[data-state="printing"] {
+  color: var(--accent);
+}
+.d2c-toc li[data-state="typing"]::before,
+.d2c-toc li[data-state="printing"]::before {
+  content: "▸ ";
+}
+.d2c-toc li[data-state="done"] {
+  color: var(--fg);
+}
+.d2c-toc li[data-state="done"]::before {
+  content: "✓ ";
+  color: var(--green);
+}
+.d2c-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.75rem;
+  line-height: 1.7;
+}
+.d2c-tags a {
+  color: var(--green);
+  text-decoration: none;
+}
+.d2c-tags a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.d2c-ls a {
+  grid-template-columns: auto 6.5rem 8rem auto 1fr;
+}
+.d2c-size {
+  text-align: left;
+}
+@media (max-width: 1080px) {
+  .d2c {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  .d2c-side {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+}
+/* the pending prompt also shows before the very first command */
+.d2c-block:first-child[data-step="wait"] {
+  visibility: visible;
+}
+.d2c-block:first-child[data-step="wait"] .d2c-out,
+.d2c-block:first-child[data-step="wait"] .d2c-typed {
+  visibility: hidden;
+}
+.d2c-block:first-child[data-step="wait"] .d2c-caret {
+  visibility: visible;
+  animation: d1-blink 0.8s steps(1) infinite;
+}

@@ -12,7 +12,6 @@ export function SiteHeader({ locale, d }: { locale: Locale; d: Dictionary }) {
       </Link>
       <nav className="site-nav" aria-label="Main">
         <NavLink href={`/${locale}/writing`}>{d.nav.writing}</NavLink>
-        <NavLink href={`/${locale}/notes`}>{d.nav.notes}</NavLink>
         <NavLink href={`/${locale}/about`}>{d.nav.about}</NavLink>
       </nav>
       <div className="site-tools">

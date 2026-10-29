@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArticleList } from "@/components/entry-list";
-import { allEntries } from "@/lib/content";
+import { WritingGrid } from "@/components/entry-list";
+import { TagFilter } from "@/components/tag-filter";
+import { allTags } from "@/lib/content";
+import { writing } from "@/lib/lab";
 import { dictionaries, isLocale } from "@/lib/i18n";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -18,12 +20,13 @@ export default async function Writing({ params }: Props) {
   if (!isLocale(locale)) notFound();
   const d = dictionaries[locale];
   return (
-    <section className="index-page">
+    <section className="index-page" id="writing">
       <header className="page-head">
         <h1>{d.writing.title}</h1>
         <p>{d.writing.intro}</p>
       </header>
-      <ArticleList entries={allEntries("articles")} locale={locale} />
+      <TagFilter tags={allTags(writing())} allLabel={d.notes.allTags} scopeId="writing" />
+      <WritingGrid entries={writing()} locale={locale} d={d} />
     </section>
   );
 }

@@ -9,14 +9,14 @@ export const alt = site.name;
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const entry = getEntry("articles", slug);
+  const entry = getEntry("articles", slug) ?? getEntry("notes", slug);
   return ogCard({
-    eyebrow: "writing",
+    eyebrow: entry?.kind === "notes" ? "notes" : "writing",
     title: entry?.title ?? site.name,
     footer: `${site.name} · ${new URL(site.url).host}`,
   });
 }
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) => allEntries("articles").map((e) => ({ locale, slug: e.slug })));
+  return locales.flatMap((locale) => [...allEntries("articles"), ...allEntries("notes")].map((e) => ({ locale, slug: e.slug })));
 }

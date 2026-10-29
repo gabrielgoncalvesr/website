@@ -18,7 +18,7 @@ export function PostView({ entry, locale, d, children }: Props) {
     <article className="post" lang="en">
       <header className="post-header">
         <Link href={`/${locale}/${section[entry.kind]}`} className="back-link">
-          ← {isNote ? d.nav.notes : d.nav.writing}
+          ← {d.nav.writing}
         </Link>
         {entry.stage && <StageBadge stage={entry.stage} d={d} />}
         <h1 className="post-title">{entry.title}</h1>

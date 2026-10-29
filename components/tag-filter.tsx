@@ -12,9 +12,13 @@ export function TagFilter({ tags, allLabel, scopeId }: { tags: string[]; allLabe
       const show = !tag || el.dataset.tags!.split(" ").includes(tag);
       el.closest("li")!.hidden = !show;
     });
+    // Hide a group (e.g. a year) once every row in it is filtered out.
+    document.querySelectorAll<HTMLElement>(`#${scopeId} [data-group]`).forEach((g) => {
+      g.hidden = !g.querySelector("li:not([hidden])");
+    });
   }
 
-  // Deep link: /notes?tag=go
+  // Deep link: /writing?tag=go
   useEffect(() => {
     const t = new URLSearchParams(location.search).get("tag");
     if (t && tags.includes(t)) pick(t);
@@ -25,7 +29,7 @@ export function TagFilter({ tags, allLabel, scopeId }: { tags: string[]; allLabe
     <div className="tag-filter" role="toolbar">
       {[null, ...tags].map((t) => (
         <button key={t ?? "*"} type="button" aria-pressed={active === t} onClick={() => pick(t)} className="tag">
-          {t ? `#${t}` : allLabel}
+          {t ? t.replace(/-/g, " ") : allLabel}
         </button>
       ))}
     </div>

@@ -1,0 +1,162 @@
+/* Design lab chrome: the floating picker and shared helpers. */
+body {
+  overflow-x: clip;
+}
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.lab-switch {
+  position: fixed;
+  z-index: 100;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.35rem 0.35rem 0.4rem;
+  background: #111;
+  color: #f2f2f2;
+  border-radius: 999px;
+  font: 500 0.75rem/1 var(--font-sans), system-ui, sans-serif;
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.25);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.lab-switch[data-pending="true"] {
+  opacity: 0.7;
+}
+.lab-switch[data-open="false"] {
+  padding: 0.35rem;
+}
+.lab-switch button {
+  all: unset;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.lab-switch button:focus-visible {
+  outline: 2px solid #fff;
+}
+.lab-toggle {
+  background: #2a2a2a;
+}
+.lab-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 9.5rem;
+}
+.lab-label span {
+  color: #9a9a9a;
+  font-size: 0.6875rem;
+}
+.lab-buttons {
+  display: grid;
+  grid-template-columns: repeat(10, 1.65rem);
+  gap: 0.1rem;
+}
+.lab-buttons button {
+  width: 1.65rem !important;
+  height: 1.65rem !important;
+  font-size: 0.6875rem;
+}
+.lab-switch {
+  border-radius: 1.4rem !important;
+}
+@media (max-width: 720px) {
+  .lab-buttons button {
+    width: 1.55rem;
+  }
+  .lab-label {
+    display: none;
+  }
+}
+.lab-buttons button:hover {
+  background: #2a2a2a;
+}
+.lab-buttons button[aria-pressed="true"] {
+  background: #f2f2f2;
+  color: #111;
+}
+@media (max-width: 520px) {
+  .lab-label span {
+    display: none;
+  }
+  .lab-label {
+    min-width: 0;
+  }
+}
+
+/* Each design owns its type: remap the base serif token and drop the v3 section mark. */
+html[data-design="1"],
+html[data-design="1b"],
+html[data-design="5"] {
+  --font-serif: var(--font-tight);
+}
+html[data-design="2"],
+html[data-design="2b"],
+html[data-design="2c"] {
+  --font-serif: var(--font-jet);
+  --font-sans: var(--font-jet);
+}
+html[data-design="4"],
+html[data-design="4b"] {
+  --font-serif: var(--font-bricolage);
+}
+html:not([data-design="3"]) .band-mark {
+  display: none;
+}
+[data-design="1"] .prose,
+[data-design="1b"] .prose,
+[data-design="5"] .prose,
+[data-design="4"] .prose,
+[data-design="4b"] .prose {
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+/* Keyframes shared across designs (kept here so any design file can be removed safely). */
+@keyframes d1-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes d1-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes d2-show {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes d4-pop {
+  from {
+    scale: 0;
+  }
+}
+@keyframes d8-pulse {
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+@keyframes d9-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes d9-stamp {
+  from {
+    scale: 2.2;
+    opacity: 0;
+  }
+}

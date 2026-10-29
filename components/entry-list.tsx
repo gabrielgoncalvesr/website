@@ -10,7 +10,7 @@ export function ArticleRows({ entries, locale }: { entries: Entry[]; locale: Loc
     <ol className="article-list">
       {entries.map((e) => (
         <li key={e.slug}>
-          <Link href={entryHref(locale, e)} className="article-row">
+          <Link href={entryHref(locale, e)} className="article-row" data-tags={e.tags.join(" ")}>
             <span className="article-title">{e.title}</span>
             <span className="article-leader" aria-hidden />
             <time dateTime={e.date} className="article-date">
@@ -29,7 +29,7 @@ export function ArticleList({ entries, locale }: { entries: Entry[]; locale: Loc
   return (
     <div className="article-years">
       {years.map((y) => (
-        <div key={y} className="article-year">
+        <div key={y} className="article-year" data-group>
           <p className="article-year-label">{y}</p>
           <ArticleRows entries={entries.filter((e) => e.date.startsWith(y))} locale={locale} />
         </div>
@@ -50,6 +50,33 @@ export function NoteList({ entries, locale, d }: { entries: Entry[]; locale: Loc
             <span className="note-meta">
               {d.post.updated} {formatDate(e.updated ?? e.date, locale, "short")}
             </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Articles and notes as a wall of tiles: date, length or stage, title, summary, tags. */
+export function WritingGrid({ entries, locale, d }: { entries: Entry[]; locale: Locale; d: Dictionary }) {
+  return (
+    <ul className="wgrid">
+      {entries.map((e) => (
+        <li key={e.slug}>
+          <Link href={entryHref(locale, e)} className={`wcard ${e.kind === "notes" ? "is-note" : ""}`} data-tags={e.tags.join(" ")}>
+            <span className="wcard-top">
+              <time dateTime={e.date}>{formatDate(e.date, locale, "short")}</time>
+              <span>{e.kind === "notes" ? (e.stage ? d.stage[e.stage] : d.nav.notes) : `${e.readingMinutes} min`}</span>
+            </span>
+            <span className="wcard-title">{e.title}</span>
+            <span className="wcard-sum">{e.summary}</span>
+            {e.tags.length > 0 && (
+              <span className="wcard-tags">
+                {e.tags.map((x) => (
+                  <span key={x}>{x.replace(/-/g, " ")}</span>
+                ))}
+              </span>
+            )}
           </Link>
         </li>
       ))}

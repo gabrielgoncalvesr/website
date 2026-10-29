@@ -8,15 +8,17 @@ import { site } from "./site";
 
 type Params = { params: Promise<{ locale: string; slug: string }> };
 
-/** Shared implementation for /writing/[slug] and /notes/[slug]. */
-export function postRoute(kind: Kind) {
+/** /writing/[slug] serves both articles and notes; slugs are unique across the two. */
+export function postRoute(kinds: Kind[]) {
+  const find = (slug: string) => kinds.map((k) => getEntry(k, slug)).find(Boolean);
+
   function generateStaticParams() {
-    return locales.flatMap((locale) => allEntries(kind).map((e) => ({ locale, slug: e.slug })));
+    return locales.flatMap((locale) => kinds.flatMap((k) => allEntries(k)).map((e) => ({ locale, slug: e.slug })));
   }
 
   async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { locale, slug } = await params;
-    const entry = getEntry(kind, slug);
+    const entry = find(slug);
     if (!entry || !isLocale(locale)) return {};
     const canonical = entryHref("en", entry);
     return {
@@ -38,9 +40,9 @@ export function postRoute(kind: Kind) {
 
   async function Page({ params }: Params) {
     const { locale, slug } = await params;
-    const entry = getEntry(kind, slug);
+    const entry = find(slug);
     if (!entry || !isLocale(locale)) notFound();
-    const Body = await loadBody(kind, slug);
+    const Body = await loadBody(entry.kind, slug);
     return (
       <PostView entry={entry} locale={locale} d={dictionaries[locale]}>
         <Body />
