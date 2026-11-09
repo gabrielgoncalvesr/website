@@ -496,6 +496,8 @@ html[data-design="4b"][data-theme="dark"] {
   font-size: 0.8125rem;
   height: 5.4rem;
   overflow: hidden;
+  /* long lines ellipsize instead of widening the card */
+  contain: inline-size;
 }
 .d4b-log li {
   padding: 0.3rem 0;
@@ -824,6 +826,10 @@ html[data-design="4b"][data-theme="dark"] {
 .d4b-hero-toy .d4b-toy {
   rotate: 1.2deg;
 }
+.d4b-hero-toy,
+.d4b-toy {
+  min-width: 0;
+}
 .d4b-hero-toy .d4b-toy-head {
   grid-template-columns: 1fr;
   gap: 0.75rem;
@@ -862,8 +868,9 @@ html[data-design="4b"][data-theme="dark"] {
 }
 
 @media (max-width: 960px) {
+  /* minmax(0, …) so a long log line can't widen the page on phones */
   .d4b-hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 860px) {

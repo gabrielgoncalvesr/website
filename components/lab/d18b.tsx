@@ -108,8 +108,8 @@ export function Home({ locale, d }: Chrome) {
       <RpgMenu
         intro={t(locale, "A wild RECRUITER appeared! What will you do?", "Um RECRUTADOR selvagem apareceu! O que você vai fazer?")}
         options={[
-          { label: t(locale, "READ CV", "LER CV"), href: "#work" },
           { label: t(locale, "QUESTS", "MISSÕES"), href: "#quests" },
+          { label: t(locale, "READ CV", "LER CV"), href: "#work" },
           { label: t(locale, "ITEMS", "ITENS"), href: "#items" },
           { label: t(locale, "RUN", "FUGIR"), reply: t(locale, "Can't escape! Gabriel is too interesting.", "Não dá pra fugir! O Gabriel é interessante demais.") },
         ]}
@@ -129,6 +129,41 @@ export function Home({ locale, d }: Chrome) {
             allVisited: t(locale, "ACHIEVEMENT: full career run!", "CONQUISTA: carreira completa!"),
           }}
         />
+      </section>
+
+      <section className="d18b-box d18b-board" id="quests">
+        <header className="d18b-board-head">
+          <h2 className="d18b-h2">{t(locale, "Quest board", "Quadro de missões")}</h2>
+          <p className="d18b-dim">{t(locale, "What I write about work. Pick one.", "O que eu escrevo sobre o trabalho. Escolha uma.")}</p>
+        </header>
+        <ol className="d18b-board-list">
+          {entries.slice(0, 7).map((e, i) => {
+            const open = e.kind === "notes" && e.stage !== "evergreen";
+            return (
+              <li key={e.slug} className={i === 0 ? "is-new" : ""}>
+                <Link href={entryHref(locale, e)} className="d18b-card">
+                  <span className="d18b-card-top">
+                    <span className={`d18b-card-kind ${e.kind === "articles" ? "is-main" : ""}`}>
+                      {e.kind === "articles" ? t(locale, "MAIN QUEST", "MISSÃO PRINCIPAL") : t(locale, "SIDE QUEST", "MISSÃO PARALELA")}
+                    </span>
+                    {i === 0 && <span className="d18b-card-new">{t(locale, "NEW!", "NOVA!")}</span>}
+                  </span>
+                  <b className="d18b-card-title">{e.title}</b>
+                  <span className="d18b-card-sum">{e.summary}</span>
+                  <span className="d18b-card-foot">
+                    <span>
+                      <span className={`d18b-check ${open ? "is-open" : ""}`}>{open ? "…" : "✔"}</span> {formatDate(e.date, locale, "short")} · {e.readingMinutes} min
+                    </span>
+                    <span className="d18b-card-xp">+{e.readingMinutes * 50} XP</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        <Link href={`/${locale}/writing`} className="d18b-more">
+          ▶ {d.journal.allWriting}
+        </Link>
       </section>
 
       <div className="d18b-game">
@@ -196,30 +231,6 @@ export function Home({ locale, d }: Chrome) {
             ))}
           </ol>
         </section>
-
-        <section className="d18b-box d18b-quests-box" id="quests">
-          <h2 className="d18b-h2">{t(locale, "Quest log", "Diário de missões")}</h2>
-          <ul className="d18b-quests">
-            {entries.slice(0, 10).map((e) => (
-              <li key={e.slug}>
-                <Link href={entryHref(locale, e)}>
-                  <span className={`d18b-check ${e.kind === "notes" && e.stage !== "evergreen" ? "is-open" : ""}`}>{e.kind === "notes" && e.stage !== "evergreen" ? "…" : "✔"}</span>
-                  <span className="d18b-quest">
-                    {e.title}
-                    <small>
-                      {formatDate(e.date, locale, "short")}
-                      {e.tags.slice(0, 3).map((x) => ` · #${x}`).join("")}
-                    </small>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Link href={`/${locale}/writing`} className="d18b-more">
-            ▶ {d.journal.allWriting}
-          </Link>
-        </section>
-
 
         <aside className="d18b-hud">
           <section className="d18b-box" id="items">

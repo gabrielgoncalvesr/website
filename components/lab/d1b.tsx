@@ -9,7 +9,6 @@ import { rolesNewestFirst, t, writing } from "@/lib/lab";
 import { education, profile } from "@/lib/profile";
 import { entryHref } from "@/lib/routes";
 import { site } from "@/lib/site";
-import { Clock } from "./bits";
 
 type Chrome = { locale: Locale; d: Dictionary };
 
@@ -52,7 +51,7 @@ export function Footer({ locale, d }: Chrome) {
         <span>(05)</span>
         <h2>{hasContact ? t(locale, "Say hi", "Bora conversar") : t(locale, "Elsewhere", "Em outros lugares")}</h2>
         <span>
-          São Paulo · <Clock />
+          São Paulo
         </span>
       </header>
       <ul className="d1b-links">
@@ -130,7 +129,7 @@ export function Home({ locale, d }: Chrome) {
           {roles.map((r) => (
             <li key={r.start} className="d1b-role-row" tabIndex={0}>
               <span className="d1b-years">
-                {r.start.slice(0, 4)}–{r.end ? r.end.slice(2, 4) : t(locale, "now", "hoje")}
+                {r.start.slice(0, 4)}–{r.end ? r.end.slice(0, 4) : t(locale, "now", "hoje")}
               </span>
               <span className="d1b-role-name">{r.role[locale].replace(/ · .*/, "")}</span>
               <span className="d1b-company">{r.company}</span>

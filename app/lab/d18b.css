@@ -776,8 +776,7 @@ html[data-design="18b"][data-theme="light"] {
   grid-template-columns: 19rem minmax(0, 1fr) 17rem;
   grid-template-areas:
     "party story hud"
-    "party school hud"
-    "party quests quests";
+    "party school hud";
   gap: 0 1.5rem;
   align-items: start;
   margin-top: 1rem;
@@ -789,9 +788,6 @@ html[data-design="18b"][data-theme="light"] {
 }
 .d18b-story {
   grid-area: story;
-}
-.d18b-quests-box {
-  grid-area: quests;
 }
 .d18b-side-box {
   grid-area: side;
@@ -868,7 +864,6 @@ html[data-design="18b"][data-theme="light"] {
     grid-template-areas:
       "party story"
       "party school"
-      "party quests"
       "party hud";
   }
   .d18b-game > * {
@@ -889,7 +884,7 @@ html[data-design="18b"][data-theme="light"] {
 @media (max-width: 760px) {
   .d18b-game {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "party" "story" "school" "quests" "hud";
+    grid-template-areas: "party" "story" "school" "hud";
   }
   .d18b-party {
     position: static;
@@ -903,13 +898,6 @@ html[data-design="18b"][data-theme="light"] {
   margin-top: 0.15rem;
   font-size: 0.75rem;
   color: var(--muted);
-}
-.d18b-quests-box .d18b-quests {
-  columns: 2 22rem;
-  column-gap: 2.5rem;
-}
-.d18b-quests-box li {
-  break-inside: avoid;
 }
 
 /* training grounds: three scrolls, each with a crest */
@@ -1095,4 +1083,165 @@ html[data-design="18b"][data-theme="light"] {
     animation: none;
     transition: none;
   }
+}
+
+/* quest board: the writing, up front and readable */
+.d18b-board-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.d18b-board-head .d18b-h2 {
+  margin: 0;
+}
+.d18b-board-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1rem;
+}
+.d18b-board-list li.is-new {
+  grid-column: span 2;
+}
+.d18b-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 3px solid color-mix(in oklab, var(--line) 55%, transparent);
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--bg) 45%, var(--surface));
+  text-decoration: none;
+  transition:
+    transform 100ms steps(2),
+    border-color 100ms;
+}
+.d18b-card:hover,
+.d18b-card:focus-visible {
+  border-color: var(--accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+.is-new .d18b-card {
+  border-color: var(--accent);
+}
+.d18b-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.d18b-card-kind,
+.d18b-card-new,
+.d18b-card-xp {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  line-height: 1.6;
+}
+.d18b-card-kind {
+  color: #29adff;
+}
+.d18b-card-kind.is-main {
+  color: #ffa300;
+}
+.d18b-card-new {
+  padding: 0.15rem 0.4rem;
+  background: #ff004d;
+  color: #fff1e8;
+  animation: d1-blink 1.2s steps(1) infinite;
+}
+.d18b-card-title {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.is-new .d18b-card-title {
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+}
+.d18b-card:hover .d18b-card-title {
+  color: var(--accent);
+}
+.d18b-card-sum {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.d18b-card-foot {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.d18b-card-xp {
+  color: #00e436;
+}
+@media (max-width: 640px) {
+  .d18b-board-list li.is-new {
+    grid-column: auto;
+  }
+  .d18b-board-list li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+/* reading a post: keep the pixel chrome, but body copy in a real text face */
+[data-design="18b"] .post {
+  --font-serif: var(--font-sans);
+  --font-display: var(--font-sans);
+}
+[data-design="18b"] .post-title {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+[data-design="18b"] .post-summary {
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+[data-design="18b"] .prose {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: color-mix(in oklab, var(--fg) 90%, var(--surface));
+}
+[data-design="18b"] .prose h2,
+[data-design="18b"] .prose h3 {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+[data-design="18b"] .prose h2::before {
+  content: "▸ ";
+  color: var(--accent);
+}
+[data-design="18b"] .prose a {
+  color: var(--accent);
+}
+[data-design="18b"] .prose code,
+[data-design="18b"] .prose pre {
+  font-family: var(--font-jet), monospace;
+  font-size: 0.9em;
+}
+[data-design="18b"] .prose blockquote {
+  border-left: 4px solid var(--accent);
+  color: var(--muted);
 }

@@ -308,7 +308,7 @@ html[data-design="1b"][data-theme="dark"] {
 }
 .d1b-role-row:hover .d1b-summary,
 .d1b-role-row:focus-visible .d1b-summary {
-  max-height: 4rem;
+  max-height: 14rem;
   opacity: 1;
   margin-top: 0.5rem;
 }
